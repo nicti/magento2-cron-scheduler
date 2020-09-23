@@ -14,8 +14,10 @@
 
 namespace KiwiCommerce\CronScheduler\Observer;
 
+use Magento\Cron\Model\DeadlockRetrierInterface;
 use Magento\Cron\Model\Schedule;
 use Magento\Framework\Console\Cli;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Profiler\Driver\Standard\Stat;
 use Magento\Framework\Profiler\Driver\Standard\StatFactory;
 use Magento\Framework\App\State;
@@ -78,6 +80,8 @@ class ProcessCronQueueObserverDefault extends \Magento\Cron\Observer\ProcessCron
      * @param \KiwiCommerce\CronScheduler\Helper\Cronjob $jobHelper
      * @param StatFactory $statFactory
      * @param \Magento\Framework\Lock\LockManagerInterface $lockManager
+     * @param \Magento\Framework\Event\ManagerInterface $eventManager
+     * @param DeadlockRetrierInterface $retrier
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -94,12 +98,14 @@ class ProcessCronQueueObserverDefault extends \Magento\Cron\Observer\ProcessCron
         \Magento\Framework\App\State $state,
         StatFactory $statFactory,
         \Magento\Framework\Lock\LockManagerInterface $lockManager,
+        ManagerInterface $eventManager,
+        DeadlockRetrierInterface $retrier,
         \KiwiCommerce\CronScheduler\Helper\Schedule $scheduleHelper,
         \KiwiCommerce\CronScheduler\Helper\Cronjob $jobHelper
     ) {
 
         $construct = "__construct"; // in order to bypass the compiler
-        parent::$construct($objectManager, $scheduleFactory, $cache, $config, $scopeConfig, $request, $shell, $dateTime, $phpExecutableFinderFactory, $logger, $state, $statFactory, $lockManager);
+        parent::$construct($objectManager, $scheduleFactory, $cache, $config, $scopeConfig, $request, $shell, $dateTime, $phpExecutableFinderFactory, $logger, $state, $statFactory, $lockManager,$eventManager,$retrier);
         $this->logger = $logger;
         $this->state = $state;
         $this->statProfiler = $statFactory->create();
